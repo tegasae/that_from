@@ -1,16 +1,12 @@
-
-from dataclasses import dataclass, field
-from datetime import datetime
+import sqlite3
 
 import openpyxl
 
 import pyexcel as p
 import re
 
-from models.domain import Log, Card, Person
-
-
-
+from models.domain import Log, Card, PersonOil
+from repository.card import SqlLiteRepositoryPerson
 
 xls_file = 'oil_september.xls'
 xlsx_file = 'oil_september.xlsx'
@@ -21,7 +17,7 @@ p.save_book_as(file_name=xls_file, dest_file_name=xlsx_file)
 dataframe = openpyxl.load_workbook("oil_september.xlsx")
 datasheet = dataframe.worksheets[0]
 
-people: dict[str, Person] = {}
+people: dict[str, PersonOil] = {}
 
 empty_lines = 0
 i = 1
@@ -35,7 +31,7 @@ while empty_lines < 30:
         continue
     if re.match('^\d{5,}', card_number):
         if type(name) is str and not name in people.keys():
-            p = Person(name=name)
+            p = PersonOil(name=name)
             people[p.name] = p
 
             if not card_number in people[p.name].cards.keys():
@@ -46,7 +42,7 @@ while empty_lines < 30:
             date = datasheet.cell(row=i, column=3).value
             if not date:
                 break
-            #date = datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+            # date = datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
             address = datasheet.cell(row=i, column=5).value
             operation = datasheet.cell(row=i, column=6).value
             service = datasheet.cell(row=i, column=7).value
@@ -55,14 +51,25 @@ while empty_lines < 30:
             log = Log(date_log=date, address=address, operation=operation, service=service, quantity=quanity,
                       price=price)
 
-            #print(p)
+            # print(p)
             if not log in people[p.name].cards[card_number].logs:
                 people[p.name].cards[card_number].logs.append(log)
 
             i += 1
+        people[p.name].cards[card_number].check_summ=datasheet.cell(row=i+3, column=9).value
+        if not people[p.name].cards[card_number].checking_summ():
+            raise ValueError(f"Data isn't valid {p.name} {card_number}")
 
-
+con = sqlite3.connect("../1c_work/works.db")
+rp=SqlLiteRepositoryPerson(conn=con)
 for i in people.keys():
-    print(people[i])
+    print(rp.add(people[i]))
     # print(f"{people[i]} {people[i].cards}")
+for i in rp.people1c.keys():
+    print(rp.people1c[i].short_name())
+    if rp.people1c[i].short_name() in rp.seen.keys():
+        print("True")
+con.commit()
+con.close()
+
 
