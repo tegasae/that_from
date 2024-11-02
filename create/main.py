@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 
 from openpyxl import Workbook
-from openpyxl.styles import Font
+from openpyxl.styles import Font, Alignment, Border, Side
 
 
 @dataclass(kw_only=True)
@@ -18,6 +18,7 @@ class Engineer:
     out_time_hour: float = 0
     out_time_salary: float = 0
     transport: float = 0
+    transport_money: float = 0
     fuel:float=0
     fuel_litres: float = 0
 
@@ -122,6 +123,7 @@ def get_out_time(conn, enginners: list):
             continue
 
         enginners[i].transport = result[2]
+        enginners[i].transport_money = (result[2]/15)*12
 
 
 def get_duty(conn, enginners: list):
@@ -226,16 +228,19 @@ wb = Workbook()
 
 wb.save('salary.xlsx')
 ws = wb.active
+ws.title='Расчет часов и расходов'
+ws.row_dimensions[5].height = 50
 ws.column_dimensions['A'].width = 50
-ws.column_dimensions['B'].width = 20
-ws.column_dimensions['C'].width = 20
-ws.column_dimensions['D'].width = 20
-ws.column_dimensions['E'].width = 20
-ws.column_dimensions['F'].width = 20
+ws.column_dimensions['B'].width = 15
+ws.column_dimensions['C'].width = 15
+ws.column_dimensions['D'].width = 15
+ws.column_dimensions['E'].width = 15
+ws.column_dimensions['F'].width = 15
 ws.column_dimensions['G'].width = 15
 ws.column_dimensions['H'].width = 15
 ws.column_dimensions['I'].width = 15
 ws.column_dimensions['J'].width = 15
+ws.column_dimensions['K'].width = 15
 
 ws['A3'] = '09.2024'
 ws['A3'].font=Font(bold=True)
@@ -243,51 +248,102 @@ ws['A4'] = 'Суппорт'
 ws['A4'].font = Font(bold=True)
 row=5
 
+thin_border = Border(left=Side(style='thin'),
+                     right=Side(style='thin'),
+                     top=Side(style='thin'),
+                     bottom=Side(style='thin'))
+
+
 ws.cell(row=5, column=1).value='Имя'
 ws.cell(row=5, column=1).font=Font(bold=True)
+ws.cell(row=5, column=1).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=1).border=thin_border
 
 ws.cell(row=5, column=2).value='Удаленка, часы'
 ws.cell(row=5, column=2).font=Font(bold=True)
+ws.cell(row=5, column=2).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=2).border=thin_border
 
 ws.cell(row=5, column=3).value='Удаленка, рубли'
 ws.cell(row=5, column=3).font=Font(bold=True)
+ws.cell(row=5, column=3).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=3).border=thin_border
+
 
 ws.cell(row=5, column=4).value='Дежурство, дни'
 ws.cell(row=5, column=4).font=Font(bold=True)
+ws.cell(row=5, column=4).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=4).border=thin_border
 
 ws.cell(row=5, column=5).value='Дежурство, рубли'
 ws.cell(row=5, column=5).font=Font(bold=True)
+ws.cell(row=5, column=5).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=5).border=thin_border
 
 ws.cell(row=5, column=6).value='Внеурочное, часы'
 ws.cell(row=5, column=6).font=Font(bold=True)
+ws.cell(row=5, column=6).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=6).border=thin_border
 
 ws.cell(row=5, column=7).value='Внеурочное, рубли'
 ws.cell(row=5, column=7).font=Font(bold=True)
+ws.cell(row=5, column=7).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=7).border=thin_border
 
 ws.cell(row=5, column=8).value='Транспортные, рубли'
 ws.cell(row=5, column=8).font=Font(bold=True)
+ws.cell(row=5, column=8).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=8).border=thin_border
 
-ws.cell(row=5, column=9).value='Бензин, литры'
+ws.cell(row=5, column=9).value='Транспортные на руки, рубли'
 ws.cell(row=5, column=9).font=Font(bold=True)
+ws.cell(row=5, column=9).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=9).border=thin_border
 
-ws.cell(row=5, column=10).value='Бензин, рубли'
+ws.cell(row=5, column=10).value='Бензин, литры'
 ws.cell(row=5, column=10).font=Font(bold=True)
+ws.cell(row=5, column=10).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=10).border=thin_border
 
-
+ws.cell(row=5, column=11).value='Бензин, рубли'
+ws.cell(row=5, column=11).font=Font(bold=True)
+ws.cell(row=5, column=11).alignment=Alignment(wrapText=True)
+ws.cell(row=5, column=11).border=thin_border
 
 for e in engineers:
     row+=1
     ws.cell(row=row,column=1).value=e.name
-    ws.cell(row=row, column=2).value = e.remote_hour
-    ws.cell(row=row, column=3).value = e.remote_salary
-    ws.cell(row=row, column=4).value=e.duty_days
-    ws.cell(row=row, column=5).value = e.duty_salary
-    ws.cell(row=row, column=6).value = e.out_time_hour
-    ws.cell(row=row, column=7).value = e.out_time_salary
-    ws.cell(row=row, column=8).value = e.transport
-    ws.cell(row=row, column=9).value = e.fuel_litres
-    ws.cell(row=row, column=10).value = e.fuel
+    ws.cell(row=row, column=1).border = thin_border
 
+    ws.cell(row=row, column=2).value = e.remote_hour
+    ws.cell(row=row, column=2).border = thin_border
+
+    ws.cell(row=row, column=3).value = e.remote_salary
+    ws.cell(row=row, column=3).border = thin_border
+
+    ws.cell(row=row, column=4).value=e.duty_days
+    ws.cell(row=row, column=4).border = thin_border
+
+    ws.cell(row=row, column=5).value = e.duty_salary
+    ws.cell(row=row, column=5).border = thin_border
+
+    ws.cell(row=row, column=6).value = e.out_time_hour
+    ws.cell(row=row, column=6).border = thin_border
+
+    ws.cell(row=row, column=7).value = e.out_time_salary
+    ws.cell(row=row, column=7).border = thin_border
+
+    ws.cell(row=row, column=8).value = e.transport
+    ws.cell(row=row, column=8).border = thin_border
+
+    ws.cell(row=row, column=9).value = e.transport_money
+    ws.cell(row=row, column=9).border = thin_border
+
+    ws.cell(row=row, column=10).value = e.fuel_litres
+    ws.cell(row=row, column=10).border = thin_border
+
+    ws.cell(row=row, column=11).value = e.fuel
+    ws.cell(row=row, column=11).border = thin_border
 
 
 ws.cell(row=7+len(engineers),column=1).value='1C'
@@ -354,6 +410,10 @@ ws1.cell(row=position, column=7).font = Font(bold=True)
 position+=1
 sum_quantity=0
 sum_price=0
+sum_quantity_full=0
+sum_price_full=0
+
+
 for i in range(1,len(people_oil)+1):
     if name!=people_oil[i-1].name:
         if name!='':
@@ -370,8 +430,9 @@ for i in range(1,len(people_oil)+1):
 
 
 
+        sum_price = 0
         sum_quantity=0
-        sum_price=0
+
 
     ws1.cell(row=position, column=2).value = people_oil[i - 1].date
     ws1.cell(row=position, column=3).value = people_oil[i - 1].address
@@ -382,6 +443,10 @@ for i in range(1,len(people_oil)+1):
 
     sum_quantity+=people_oil[i - 1].quantity
     sum_price+=people_oil[i - 1].price
+
+    sum_quantity_full = sum_quantity_full + people_oil[i - 1].quantity
+    sum_price_full = sum_price_full + people_oil[i - 1].price
+
     position+=1
 
 ws1.cell(row=position, column=6).value = sum_quantity
@@ -389,6 +454,14 @@ ws1.cell(row=position, column=6).font=Font(bold=True)
 ws1.cell(row=position, column=7).value = sum_price
 ws1.cell(row=position, column=7).font = Font(bold=True)
 position+=1
+
+position+=1
+ws1.cell(row=position, column=6).value =  sum_quantity_full
+ws1.cell(row=position, column=6).font=Font(bold=True)
+ws1.cell(row=position, column=7).value = sum_price_full
+ws1.cell(row=position, column=7).font = Font(bold=True)
+
+
 
 wb.close()
 wb.save('salary.xlsx')
