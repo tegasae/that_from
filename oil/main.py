@@ -26,7 +26,7 @@ while empty_lines < 30:
     name = datasheet.cell(row=i, column=5).value
     i += 1
 
-    if type(card_number) is not str:
+    if type(card_number) is not str or card_number=='':
         empty_lines += 1
         continue
     if re.match('^\d{5,}', card_number):
@@ -57,8 +57,8 @@ while empty_lines < 30:
 
             i += 1
         people[p.name].cards[card_number].check_summ=datasheet.cell(row=i+3, column=9).value
-        if not people[p.name].cards[card_number].checking_summ():
-            raise ValueError(f"Data isn't valid {p.name} {card_number}")
+#        if not people[p.name].cards[card_number].checking_summ():
+#            raise ValueError(f"Data isn't valid {p.name} {card_number}")
 
 con = sqlite3.connect("../1c_work/works.db")
 rp=SqlLiteRepositoryPerson(conn=con)

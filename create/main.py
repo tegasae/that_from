@@ -78,7 +78,7 @@ def get_remote(conn, enginners: list):
         cur.execute('''select p.employee_id ,sum(p.hours_payment) from performers p 
                         left JOIN  works w on p.work_id =w.work_id 
                         WHERE w.date_ like :date and w.counterparty_id =29 and  p.employee_id =:id
-                        group by p.employee_id''', {'date': '2024-09%', 'id': e.id})
+                        group by p.employee_id''', {'date': '2024-10%', 'id': e.id})
         result = cur.fetchone()
         if not result:
             continue
@@ -100,7 +100,7 @@ def get_out_time(conn, enginners: list):
         left JOIN services s on w.work_id =s.work_id 
         WHERE w.date_ like :date  and  p.employee_id =:id and s.nomenclature_id=1
         group by p.employee_id  
-        ''', {'date': '2024-09%', 'id': e.id})
+        ''', {'date': '2024-10%', 'id': e.id})
         result = cur.fetchone()
         if not result:
             continue
@@ -117,7 +117,7 @@ def get_out_time(conn, enginners: list):
             left JOIN services s on w.work_id =s.work_id 
             WHERE w.date_ like :date  and  p.employee_id =:id and s.nomenclature_id=11
             group by p.employee_id  
-            ''', {'date': '2024-09%', 'id': e.id})
+            ''', {'date': '2024-10%', 'id': e.id})
         result = cur.fetchone()
         if not result:
             continue
@@ -127,7 +127,7 @@ def get_out_time(conn, enginners: list):
 
 
 def get_duty(conn, enginners: list):
-    d_now = datetime(year=2024, month=9, day=1).date()
+    d_now = datetime(year=2024, month=10, day=1).date()
     cur = conn.cursor()
     i = -1
     for e in enginners:
@@ -151,7 +151,7 @@ def get_fuel(conn, enginners: list):
     for e in enginners:
         i += 1
         cur.execute('''SELECT sum(ol.quantity),sum(ol.price) FROM oil_logs ol
-                        where date_ like '2024-09%' 
+                        where date_ like '2024-10%' 
                         and ol.person_id =(select oil_person_id FROM oil_employee oe where oe.employee_id=:id)
                     ''', {'id': e.id})
         result = cur.fetchone()
@@ -171,7 +171,7 @@ def get_fuel_all(conn, people: list):
 
     cur.execute('''SELECT op.name,ol.date_ ,operation,service,address,quantity,price  from oil_logs ol  
     left join oil_people op on op.person_id =ol.person_id 
-    where ol.date_ like '2024-09%' order by op.name , ol.date_ 
+    where ol.date_ like '2024-10%' order by op.name , ol.date_ 
                     ''')
     result = cur.fetchall()
     for r in result:
@@ -190,7 +190,7 @@ def get_hours(conn,employees:list,department_id:int=0):
             where 
             e.department_id =:department_id and e.parent ='Сотрудники' and w.date_ like :date and w.department_id =:department_id
             group by e.employee_id
-        ''', {'date': '2024-09%', 'department_id': department_id})
+        ''', {'date': '2024-10%', 'department_id': department_id})
     result = cur.fetchall()
     i=-1
     for r in result:
@@ -242,7 +242,7 @@ ws.column_dimensions['I'].width = 15
 ws.column_dimensions['J'].width = 15
 ws.column_dimensions['K'].width = 15
 
-ws['A3'] = '09.2024'
+ws['A3'] = '10.2024'
 ws['A3'].font=Font(bold=True)
 ws['A4'] = 'Суппорт'
 ws['A4'].font = Font(bold=True)

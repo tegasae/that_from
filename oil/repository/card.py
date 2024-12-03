@@ -11,7 +11,7 @@ class AbstractRepositoryPerson(abc.ABC):
     def add_card(self, card: Card) -> Card:
         return self._add_card(card)
 
-    def add_log(self, person:PersonOil) -> PersonOil:
+    def add_log(self, person: PersonOil) -> PersonOil:
         return self._add_log(person)
 
     def add(self, person: PersonOil) -> PersonOil:
@@ -24,12 +24,13 @@ class AbstractRepositoryPerson(abc.ABC):
             n = self.add_card(card=person.cards[c])
             p.cards[c] = n
         n = self.add_log(person=p)
-        p=n
+        p = n
         self.add_employee(p)
         return p
 
-    def add_employee(self,person:PersonOil):
+    def add_employee(self, person: PersonOil):
         self._add_employee(person)
+
     def get(self, name: str) -> PersonOil:
         if len(self.people1c) == 0:
             self._get1c()
@@ -57,12 +58,14 @@ class AbstractRepositoryPerson(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _add_log(self, person:PersonOil) -> PersonOil:
+    def _add_log(self, person: PersonOil) -> PersonOil:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _add_employee(self,person:PersonOil):
+    def _add_employee(self, person: PersonOil):
         raise NotImplementedError
+
+
 class SqlLiteRepositoryPerson(AbstractRepositoryPerson):
     def __init__(self, conn):
         super().__init__()
@@ -107,10 +110,11 @@ class SqlLiteRepositoryPerson(AbstractRepositoryPerson):
             i = -1
             for log in person.cards[k].logs:
                 i += 1
-                cur.execute("SELECT log_id, date_,address FROM oil_logs WHERE card_id=:card_id and date_=:date and address=:address",
-                            {'card_id': person.cards[k].card_id,'date':log.date_log,'address':log.address})
+                cur.execute(
+                    "SELECT log_id, date_,address, operation FROM oil_logs WHERE card_id=:card_id and date_=:date and address=:address and operation=:operation",
+                    {'card_id': person.cards[k].card_id, 'date': log.date_log, 'address': log.address, 'operation': log.operation})
                 r = cur.fetchone()
-                if not r or (log.date_log != r[1] and log.address != r[2]):
+                if not r or (log.date_log != r[1] and log.address != r[2] and log.operation != r[3]):
                     cur.execute(
                         "INSERT INTO oil_logs (card_id,person_id,date_,address,operation,service,quantity,price) "
                         "VALUES (:number,:person,:date,:address,:operation,:service,:quantity,:price)",
@@ -118,18 +122,20 @@ class SqlLiteRepositoryPerson(AbstractRepositoryPerson):
                          'address': log.address,
                          'operation': log.operation, 'service': log.service, 'quantity': log.quantity,
                          'price': log.price})
-                    person.cards[k].logs[i]=cur.lastrowid
+                    person.cards[k].logs[i] = cur.lastrowid
                 else:
                     person.cards[k].logs[i].log_id = r[0]
         return person
 
-    def _add_employee(self,person:PersonOil):
+    def _add_employee(self, person: PersonOil):
         for i in self.people1c.keys():
-            if self.people1c[i].short_name()==person.name:
+            if self.people1c[i].short_name() == person.name:
                 cur = self.conn.cursor()
                 cur.execute(
                     "SELECT employee_id, oil_person_id FROM oil_employee WHERE employee_id=:employee_id AND oil_person_id=:oil_person_id",
-                    {'employee_id': i,'oil_person_id': person.person_id})
-                r=cur.fetchone()
+                    {'employee_id': i, 'oil_person_id': person.person_id})
+                r = cur.fetchone()
                 if not r:
-                    cur.execute("INSERT INTO oil_employee (oil_person_id, employee_id) VALUES (:oil_person_id,:employee_id)", {'oil_person_id':person.person_id,'employee_id':i})
+                    cur.execute(
+                        "INSERT INTO oil_employee (oil_person_id, employee_id) VALUES (:oil_person_id,:employee_id)",
+                        {'oil_person_id': person.person_id, 'employee_id': i})
