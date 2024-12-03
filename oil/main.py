@@ -8,13 +8,13 @@ import re
 from models.domain import Log, Card, PersonOil
 from repository.card import SqlLiteRepositoryPerson
 
-xls_file = 'oil_september.xls'
-xlsx_file = 'oil_september.xlsx'
+xls_file = 'oil_november.xls'
+xlsx_file = 'oil_november.xlsx'
 
 # Convert XLS to XLSX
 p.save_book_as(file_name=xls_file, dest_file_name=xlsx_file)
 
-dataframe = openpyxl.load_workbook("oil_september.xlsx")
+dataframe = openpyxl.load_workbook("oil_november.xlsx")
 datasheet = dataframe.worksheets[0]
 
 people: dict[str, PersonOil] = {}
@@ -30,6 +30,7 @@ while empty_lines < 30:
         empty_lines += 1
         continue
     if re.match('^\d{5,}', card_number):
+        empty_lines=0
         if type(name) is str and not name in people.keys():
             p = PersonOil(name=name)
             people[p.name] = p

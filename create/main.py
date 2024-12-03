@@ -5,7 +5,42 @@ from datetime import date, datetime
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
 
+YEAR='2024'
+MONTH='11'
 
+class CreateDate:
+    def __init__(self,day:str='',month:str='',year:str=''):
+        if day:
+            self.day=day
+        else:
+            self.day=str(datetime.now().day)
+
+        if month:
+            self.month=month
+        else:
+            self.month=str(datetime.now().month)
+
+        if year:
+            self.year=year
+        else:
+            self.year=str(datetime.now().year)
+        self.date=datetime.strptime(f'{self.year}-{self.month}-{self.day}', '%Y-%m-%d')
+
+    def year_month(self):
+        return self.date.strftime('%Y-%m')
+
+    def year_month_like(self):
+        return self.date.strftime('%Y-%m%')
+
+    def month_year_dot(self):
+        return self.date.strftime('%m.%Y')
+
+    def get_date(self):
+        return self.date.date()
+
+
+current_date=CreateDate(year=YEAR,month=MONTH)
+NAME_XLSX=f'salary-{current_date.year_month()}.xlsx'
 @dataclass(kw_only=True)
 class Engineer:
     id: int
@@ -64,7 +99,7 @@ class PersonOil:
 
 def get_engineers(conn, engineers: list):
     cur = conn.cursor()
-    cur.execute(("SELECT employee_id,employee, code1s FROM employees WHERE department_id=1 and parent='Сотрудники'"))
+    cur.execute(("SELECT employee_id,employee, code1s FROM employees WHERE department_id=1 and parent='Сотрудники' ORDER BY employee"))
     result = cur.fetchall()
     for i in result:
         engineers.append(Engineer(id=i[0], name=i[1], code1s=i[2]))
@@ -78,7 +113,7 @@ def get_remote(conn, enginners: list):
         cur.execute('''select p.employee_id ,sum(p.hours_payment) from performers p 
                         left JOIN  works w on p.work_id =w.work_id 
                         WHERE w.date_ like :date and w.counterparty_id =29 and  p.employee_id =:id
-                        group by p.employee_id''', {'date': '2024-10%', 'id': e.id})
+                        group by p.employee_id''', {'date': current_date.year_month_like(), 'id': e.id})
         result = cur.fetchone()
         if not result:
             continue
@@ -100,7 +135,7 @@ def get_out_time(conn, enginners: list):
         left JOIN services s on w.work_id =s.work_id 
         WHERE w.date_ like :date  and  p.employee_id =:id and s.nomenclature_id=1
         group by p.employee_id  
-        ''', {'date': '2024-10%', 'id': e.id})
+        ''', {'date': current_date.year_month_like(), 'id': e.id})
         result = cur.fetchone()
         if not result:
             continue
@@ -117,7 +152,7 @@ def get_out_time(conn, enginners: list):
             left JOIN services s on w.work_id =s.work_id 
             WHERE w.date_ like :date  and  p.employee_id =:id and s.nomenclature_id=11
             group by p.employee_id  
-            ''', {'date': '2024-10%', 'id': e.id})
+            ''', {'date': current_date.year_month_like(), 'id': e.id})
         result = cur.fetchone()
         if not result:
             continue
@@ -151,9 +186,9 @@ def get_fuel(conn, enginners: list):
     for e in enginners:
         i += 1
         cur.execute('''SELECT sum(ol.quantity),sum(ol.price) FROM oil_logs ol
-                        where date_ like '2024-10%' 
+                        where date_ like :date 
                         and ol.person_id =(select oil_person_id FROM oil_employee oe where oe.employee_id=:id)
-                    ''', {'id': e.id})
+                    ''', {'date': current_date.year_month_like(),'id': e.id})
         result = cur.fetchone()
 
         if not result[0]:
@@ -165,14 +200,15 @@ def get_fuel(conn, enginners: list):
 
 
 def get_fuel_all(conn, people: list):
-    d_now = datetime(year=2024, month=9, day=1).date()
+    #d_now = datetime(year=2024, month=9, day=1).date()
+    d_now=current_date.get_date()
     cur = conn.cursor()
     i = -1
 
     cur.execute('''SELECT op.name,ol.date_ ,operation,service,address,quantity,price  from oil_logs ol  
     left join oil_people op on op.person_id =ol.person_id 
-    where ol.date_ like '2024-10%' order by op.name , ol.date_ 
-                    ''')
+    where ol.date_ like :date order by op.name , ol.date_ 
+                    ''',{'date': current_date.year_month_like()})
     result = cur.fetchall()
     for r in result:
         people.append(PersonOil(name=r[0],date=r[1],operation=r[2],service=r[3],address=r[4],
@@ -190,7 +226,7 @@ def get_hours(conn,employees:list,department_id:int=0):
             where 
             e.department_id =:department_id and e.parent ='Сотрудники' and w.date_ like :date and w.department_id =:department_id
             group by e.employee_id
-        ''', {'date': '2024-10%', 'department_id': department_id})
+        ''', {'date': current_date.year_month_like(), 'department_id': department_id})
     result = cur.fetchall()
     i=-1
     for r in result:
@@ -226,7 +262,7 @@ conn.close()
 
 wb = Workbook()
 
-wb.save('salary.xlsx')
+wb.save(NAME_XLSX)
 ws = wb.active
 ws.title='Расчет часов и расходов'
 ws.row_dimensions[5].height = 50
@@ -242,7 +278,7 @@ ws.column_dimensions['I'].width = 15
 ws.column_dimensions['J'].width = 15
 ws.column_dimensions['K'].width = 15
 
-ws['A3'] = '10.2024'
+ws['A3'] = current_date.month_year_dot()
 ws['A3'].font=Font(bold=True)
 ws['A4'] = 'Суппорт'
 ws['A4'].font = Font(bold=True)
@@ -464,5 +500,5 @@ ws1.cell(row=position, column=7).font = Font(bold=True)
 
 
 wb.close()
-wb.save('salary.xlsx')
+wb.save(NAME_XLSX)
 
