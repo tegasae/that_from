@@ -61,7 +61,14 @@ class Engineer:
 class Employee:
     name:str
     hours:float
-    
+
+
+@dataclass
+class Web:
+    name:str
+    code1s:str
+    hours: float
+
 @dataclass
 class DateInterval:
     date_start: date
@@ -162,7 +169,7 @@ def get_out_time(conn, enginners: list):
 
 
 def get_duty(conn, enginners: list):
-    d_now = datetime(year=2024, month=10, day=1).date()
+    d_now = current_date.get_date()
     cur = conn.cursor()
     i = -1
     for e in enginners:

@@ -155,8 +155,8 @@ for i in engineers:
 for i in engineers:
     print(i)
 date_format = "%Y-%m-%d"
-date_start = datetime.strptime('2024-10-01', date_format)
-date_end = datetime.strptime('2024-10-31    ', date_format)
+date_start = datetime.strptime('2024-11-01', date_format)
+date_end = datetime.strptime('2024-11-30', date_format)
 
 conn = sqlite3.connect('../1c_work/works.db')
 cur = conn.cursor()

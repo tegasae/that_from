@@ -31,9 +31,10 @@ while empty_lines < 30:
         continue
     if re.match('^\d{5,}', card_number):
         empty_lines=0
-        if type(name) is str and not name in people.keys():
+        if type(name) is str:
             p = PersonOil(name=name)
-            people[p.name] = p
+            if not name in people.keys():
+                people[p.name] = p
 
             if not card_number in people[p.name].cards.keys():
                 people[p.name].cards[card_number] = Card(number=card_number)
