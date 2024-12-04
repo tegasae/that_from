@@ -61,6 +61,31 @@ class Engineer:
 class Employee:
     name:str
     hours:float
+    hours_fact: float
+    code1s: str
+
+
+
+@dataclass
+class Employee1s(Employee):
+    hourly_rate=1200
+    @property
+    def total(self)->float:
+        return self.hours*self.hourly_rate
+
+@dataclass
+class Employee1sComplicated(Employee):
+    salary=19000
+    hourly_rate=2700
+    percent=30
+    bonus=5000
+    @property
+    def percent_rub(self)->float:
+        return self.hourly_rate*self.hours*(self.percent/100)
+    @property
+    def total(self) -> float:
+        return self.percent_rub+self.salary+self.bonus
+
 
 
 @dataclass
@@ -226,13 +251,13 @@ def get_hours(conn,employees:list,department_id:int=0):
     cur = conn.cursor()
 
     cur.execute('''
-          select e.employee,sum(p.hours_payment)_  from employees e 
+          select e.employee,sum(p.hours_payment),sum(p.hours_fact),e.code1s  from employees e 
             left join performers p on p.employee_id=e.employee_id
             left join works w 
             on w.work_id =p.work_id 
             where 
-            e.department_id =:department_id and e.parent ='Сотрудники' and w.date_ like :date and w.department_id =:department_id
-            group by e.employee_id
+            e.department_id =:department_id and e.parent ='Сотрудники' and w.date_ like :date 
+            group by e.employee_id,e.code1s 
         ''', {'date': current_date.year_month_like(), 'department_id': department_id})
     result = cur.fetchall()
     i=-1
@@ -240,7 +265,20 @@ def get_hours(conn,employees:list,department_id:int=0):
         i += 1
         if not result:
             continue
-        employees.append(Employee(name=r[0],hours=r[1]))
+        employees.append(Employee(name=r[0],hours=r[1],hours_fact=r[2],code1s=r[3]))
+
+
+def get_hours1s(conn):
+    employees:list[Employee]=[]
+    employees1s=[]
+    get_hours(conn=conn,employees=employees,department_id=3)
+    for e in employees:
+        if e.code1s=='000000087':
+            employees1s.append(Employee1sComplicated(name=e.name,hours_fact=e.hours_fact,hours=e.hours,code1s=e.code1s))
+        else:
+            employees1s.append(Employee1s(name=e.name, hours_fact=e.hours_fact, hours=e.hours, code1s=e.code1s))
+    return employees1s
+
 
 engineers = []
 p1s=[]
@@ -254,7 +292,8 @@ get_remote(conn, engineers)
 get_out_time(conn, engineers)
 get_duty(conn, engineers)
 get_fuel(conn,engineers)
-get_hours(conn,p1s,3)
+#get_hours(conn,p1s,3)
+p1s=get_hours1s(conn)
 get_hours(conn,webs,2)
 get_fuel_all(conn,people_oil)
 for e in engineers:
@@ -395,15 +434,29 @@ ws.cell(row=7+len(engineers)+1,column=1).value='Имя'
 ws.cell(row=7+len(engineers)+1,column=1).font=Font(bold=True)
 ws.cell(row=7+len(engineers)+1,column=2).value='Часы'
 ws.cell(row=7+len(engineers)+1,column=2).font=Font(bold=True)
+ws.cell(row=7+len(engineers)+1,column=3).value='Часы, факт'
+ws.cell(row=7+len(engineers)+1,column=3).font=Font(bold=True)
+ws.cell(row=7+len(engineers)+1,column=4).value='Оплата'
+ws.cell(row=7+len(engineers)+1,column=4).font=Font(bold=True)
+
 
 
 row=7+len(engineers)+1
 for e in p1s:
     row+=1
     ws.cell(row=row, column=1).value = e.name
-    ws.cell(row=row, column=2).value = e.hours
-
-
+    ws.cell(row=row, column=2).value = e.hours_fact
+    ws.cell(row=row, column=3).value = e.hours
+    ws.cell(row=row, column=4).value = e.total
+    if type(e) is Employee1sComplicated:
+        ws.cell(row=row,column=5).value='Оклад:'
+        ws.cell(row=row, column=6).value = e.salary
+        ws.cell(row=row, column=7).value = 'Ставка:'
+        ws.cell(row=row, column=8).value = e.hourly_rate
+        ws.cell(row=row, column=9).value = 'Премия:'
+        ws.cell(row=row, column=10).value = e.bonus
+        ws.cell(row=row, column=11).value = 'Процент:'
+        ws.cell(row=row, column=12).value = e.percent
 
 row=7+len(engineers)+len(p1s)+4
 ws.cell(row=row,column=1).value='Веб'
