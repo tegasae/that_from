@@ -86,13 +86,25 @@ class Employee1sComplicated(Employee):
     def total(self) -> float:
         return self.percent_rub+self.salary+self.bonus
 
+@dataclass
+class EmployeeWeb(Employee):
+    hourly_rate:float=650
+    @property
+    def total(self) -> float:
+        return self.hours*self.hourly_rate
 
 
 @dataclass
-class Web:
-    name:str
-    code1s:str
-    hours: float
+class EmployeeWebComplicated(Employee):
+    hourly_rate:float=100
+    salary:float=75000
+    @property
+    def total(self) -> float:
+        return self.salary+self.hours*self.hourly_rate
+
+
+
+
 
 @dataclass
 class DateInterval:
@@ -280,6 +292,20 @@ def get_hours1s(conn):
     return employees1s
 
 
+def get_hours_web(conn):
+    employees:list[Employee]=[]
+    employees_web=[]
+    get_hours(conn=conn,employees=employees,department_id=2)
+    for e in employees:
+        if e.code1s=='000000080':
+            employees_web.append(EmployeeWebComplicated(name=e.name,hours_fact=e.hours_fact,hours=e.hours,code1s=e.code1s))
+        else:
+            employees_web.append(EmployeeWeb(name=e.name, hours_fact=e.hours_fact, hours=e.hours, code1s=e.code1s))
+    return employees_web
+
+
+
+
 engineers = []
 p1s=[]
 webs=[]
@@ -294,7 +320,7 @@ get_duty(conn, engineers)
 get_fuel(conn,engineers)
 #get_hours(conn,p1s,3)
 p1s=get_hours1s(conn)
-get_hours(conn,webs,2)
+webs=get_hours_web(conn)
 get_fuel_all(conn,people_oil)
 for e in engineers:
     print(e)
@@ -432,7 +458,7 @@ ws.cell(row=7+len(engineers),column=1).value='1C'
 ws.cell(row=7+len(engineers),column=1).font=Font(bold=True)
 ws.cell(row=7+len(engineers)+1,column=1).value='Имя'
 ws.cell(row=7+len(engineers)+1,column=1).font=Font(bold=True)
-ws.cell(row=7+len(engineers)+1,column=2).value='Часы'
+ws.cell(row=7+len(engineers)+1,column=2).value='Часы на оплату'
 ws.cell(row=7+len(engineers)+1,column=2).font=Font(bold=True)
 ws.cell(row=7+len(engineers)+1,column=3).value='Часы, факт'
 ws.cell(row=7+len(engineers)+1,column=3).font=Font(bold=True)
@@ -464,13 +490,21 @@ ws.cell(row=row,column=1).font=Font(bold=True)
 row+=1
 ws.cell(row=row,column=1).value='Имя'
 ws.cell(row=row,column=1).font=Font(bold=True)
-ws.cell(row=row,column=2).value='Часы'
+ws.cell(row=row,column=2).value='Часы на оплату'
 ws.cell(row=row,column=2).font=Font(bold=True)
+ws.cell(row=row,column=3).value='Часы, факт'
+ws.cell(row=row,column=3).font=Font(bold=True)
+ws.cell(row=row,column=4).value='Сумма'
+ws.cell(row=row,column=4).font=Font(bold=True)
+
+
 
 for e in webs:
     row+=1
     ws.cell(row=row, column=1).value = e.name
     ws.cell(row=row, column=2).value = e.hours
+    ws.cell(row=row, column=3).value = e.hours_fact
+    ws.cell(row=row, column=4).value = e.total
 
 ws1=wb.create_sheet('Бензин')
 
