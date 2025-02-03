@@ -5,8 +5,8 @@ from datetime import date, datetime
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
 
-YEAR='2024'
-MONTH='11'
+YEAR='2025'
+MONTH='01'
 
 class CreateDate:
     def __init__(self,day:str='',month:str='',year:str=''):
@@ -224,7 +224,7 @@ def get_duty(conn, enginners: list):
         enginners[i].duty_salary = (summ/7)*1000
 
 def get_fuel(conn, enginners: list):
-    d_now = datetime(year=2024, month=9, day=1).date()
+    d_now = datetime(year=2025, month=9, day=1).date()
     cur = conn.cursor()
     i = -1
     for e in enginners:

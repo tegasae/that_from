@@ -45,7 +45,7 @@ def get_cell_background_color(cell):
 
 start_row = 3
 start_col = 3
-current_year = "2024"
+current_year = "2025"
 
 
 @dataclass
@@ -100,7 +100,7 @@ def default_serializer(obj):
 engineers: list[Engineer] = []
 date_intervals: list[DateInterval] = []
 
-dataframe = openpyxl.load_workbook("Дежурства 2024.xlsx")
+dataframe = openpyxl.load_workbook("Дежурства 2025.xlsx")
 datasheet = dataframe.worksheets[0]
 # for row in range(0, datasheet.max_row):
 #    for col in datasheet.iter_cols(1, datasheet.max_column):
@@ -130,7 +130,9 @@ for i in range(start_row + 1, datasheet.max_row + 1):
 for i in range(start_col + 1, datasheet.max_column + 1):
     v = datasheet.cell(start_row, i).value
     if v is None:
-        raise ValueError("The value mustn't be None")
+        #raise ValueError("The value mustn't be None")
+        print("The value mustn't be None")
+        continue
     date_intervals.append(DateInterval(v, current_year))
 
 for r in range(start_row + 1, datasheet.max_row + 1):
@@ -155,8 +157,8 @@ for i in engineers:
 for i in engineers:
     print(i)
 date_format = "%Y-%m-%d"
-date_start = datetime.strptime('2024-11-01', date_format)
-date_end = datetime.strptime('2024-11-30', date_format)
+date_start = datetime.strptime('2025-01-01', date_format)
+date_end = datetime.strptime('2025-01-31', date_format)
 
 conn = sqlite3.connect('../1c_work/works.db')
 cur = conn.cursor()

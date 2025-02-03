@@ -8,13 +8,13 @@ import re
 from models.domain import Log, Card, PersonOil
 from repository.card import SqlLiteRepositoryPerson
 
-xls_file = 'oil_november.xls'
-xlsx_file = 'oil_november.xlsx'
+xls_file = 'oil_january.xls'
+xlsx_file = 'oil_january.xlsx'
 
 # Convert XLS to XLSX
 p.save_book_as(file_name=xls_file, dest_file_name=xlsx_file)
 
-dataframe = openpyxl.load_workbook("oil_november.xlsx")
+dataframe = openpyxl.load_workbook("oil_january.xlsx")
 datasheet = dataframe.worksheets[0]
 
 people: dict[str, PersonOil] = {}
