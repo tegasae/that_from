@@ -83,6 +83,7 @@ for i in d:
         performers.append(collect_performer.create(data=e, employee_id=employee.employee_id,
                                                    urgency_ticket_id=urgency_ticket.urgency_ticket_id,
                                                    status_ticket_id=status_ticket.status_ticket_id))
+    #
     # measurement_of_unit: UnitOfMeasurement
     # nomenclature: Nomenclature
     services = []
