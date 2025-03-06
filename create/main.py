@@ -6,7 +6,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
 
 YEAR='2025'
-MONTH='01'
+MONTH='02'
 
 class CreateDate:
     def __init__(self,day:str='',month:str='',year:str=''):
@@ -68,7 +68,7 @@ class Employee:
 
 @dataclass
 class Employee1s(Employee):
-    hourly_rate=1200
+    hourly_rate=1400
     @property
     def total(self)->float:
         return self.hours*self.hourly_rate
@@ -91,7 +91,7 @@ class EmployeeWeb(Employee):
     hourly_rate:float=650
     @property
     def total(self) -> float:
-        return self.hours*self.hourly_rate
+        return self.hours_fact*self.hourly_rate
 
 
 @dataclass

@@ -139,7 +139,9 @@ for r in range(start_row + 1, datasheet.max_row + 1):
     for c in range(start_col + 1, datasheet.max_column + 1):
         # print(engineers[r-start_row-1])
         # print(f"[{r},{c}]={datasheet.cell(r,c).value} ",end="")
-
+        if not datasheet.cell(3,c).value:
+            print("Date is null")
+            continue
         if get_cell_background_color(datasheet.cell(r, c)):
             # print(engineers[r - start_row - 1])
             # print(date_intervals[c - start_col - 1])
