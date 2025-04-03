@@ -4,9 +4,10 @@ from datetime import date, datetime
 
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
+from openpyxl.styles import Font, Alignment, Border, Side
 
 YEAR='2025'
-MONTH='02'
+MONTH='03'
 
 class CreateDate:
     def __init__(self,day:str='',month:str='',year:str=''):
@@ -76,7 +77,7 @@ class Employee1s(Employee):
 @dataclass
 class Employee1sComplicated(Employee):
     salary=19000
-    hourly_rate=2700
+    hourly_rate=3200
     percent=30
     bonus=5000
     @property
@@ -118,8 +119,9 @@ class DateInterval:
         self.count_of_days = (self.date_end - self.date_start).days + 1
 
     def in_month(self, d: date):
-        if d.month == self.date_start.month:
+        if d.month == self.date_start.month and d.year==self.date_start.year:
             return self.count_of_days
+
         return 0
 
     def _date_str(self, date: date) -> str:
@@ -219,6 +221,7 @@ def get_duty(conn, enginners: list):
         for d in result:
             date_i = DateInterval(date_start_str=d[0], date_end_str=d[1])
             summ += date_i.in_month(d=d_now)
+
 
         enginners[i].duty_days=summ
         enginners[i].duty_salary = (summ/7)*1000
