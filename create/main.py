@@ -371,36 +371,39 @@ ws.cell(row=5, column=1).font=Font(bold=True)
 ws.cell(row=5, column=1).alignment=Alignment(wrapText=True)
 ws.cell(row=5, column=1).border=thin_border
 
-ws.cell(row=5, column=2).value='Удаленка, часы'
+
+
+ws.cell(row=5, column=2).value='Дежурство, дни'
 ws.cell(row=5, column=2).font=Font(bold=True)
 ws.cell(row=5, column=2).alignment=Alignment(wrapText=True)
 ws.cell(row=5, column=2).border=thin_border
 
-ws.cell(row=5, column=3).value='Удаленка, рубли'
+ws.cell(row=5, column=3).value='Дежурство, рубли'
 ws.cell(row=5, column=3).font=Font(bold=True)
 ws.cell(row=5, column=3).alignment=Alignment(wrapText=True)
 ws.cell(row=5, column=3).border=thin_border
 
-
-ws.cell(row=5, column=4).value='Дежурство, дни'
+ws.cell(row=5, column=4).value='Внеурочное, часы'
 ws.cell(row=5, column=4).font=Font(bold=True)
 ws.cell(row=5, column=4).alignment=Alignment(wrapText=True)
 ws.cell(row=5, column=4).border=thin_border
 
-ws.cell(row=5, column=5).value='Дежурство, рубли'
+ws.cell(row=5, column=5).value='Внеурочное, рубли'
 ws.cell(row=5, column=5).font=Font(bold=True)
 ws.cell(row=5, column=5).alignment=Alignment(wrapText=True)
 ws.cell(row=5, column=5).border=thin_border
 
-ws.cell(row=5, column=6).value='Внеурочное, часы'
+ws.cell(row=5, column=6).value='Удаленка, часы'
 ws.cell(row=5, column=6).font=Font(bold=True)
 ws.cell(row=5, column=6).alignment=Alignment(wrapText=True)
 ws.cell(row=5, column=6).border=thin_border
 
-ws.cell(row=5, column=7).value='Внеурочное, рубли'
+ws.cell(row=5, column=7).value='Удаленка, рубли'
 ws.cell(row=5, column=7).font=Font(bold=True)
 ws.cell(row=5, column=7).alignment=Alignment(wrapText=True)
 ws.cell(row=5, column=7).border=thin_border
+
+
 
 ws.cell(row=5, column=8).value='Транспортные, рубли'
 ws.cell(row=5, column=8).font=Font(bold=True)
@@ -412,37 +415,38 @@ ws.cell(row=5, column=9).font=Font(bold=True)
 ws.cell(row=5, column=9).alignment=Alignment(wrapText=True)
 ws.cell(row=5, column=9).border=thin_border
 
-ws.cell(row=5, column=10).value='Бензин, литры'
-ws.cell(row=5, column=10).font=Font(bold=True)
-ws.cell(row=5, column=10).alignment=Alignment(wrapText=True)
-ws.cell(row=5, column=10).border=thin_border
+#ws.cell(row=5, column=10).value='Бензин, литры'
+#ws.cell(row=5, column=10).font=Font(bold=True)
+#ws.cell(row=5, column=10).alignment=Alignment(wrapText=True)
+#ws.cell(row=5, column=10).border=thin_border
 
-ws.cell(row=5, column=11).value='Бензин, рубли'
-ws.cell(row=5, column=11).font=Font(bold=True)
-ws.cell(row=5, column=11).alignment=Alignment(wrapText=True)
-ws.cell(row=5, column=11).border=thin_border
+#ws.cell(row=5, column=11).value='Бензин, рубли'
+#ws.cell(row=5, column=11).font=Font(bold=True)
+#ws.cell(row=5, column=11).alignment=Alignment(wrapText=True)
+#ws.cell(row=5, column=11).border=thin_border
 
 for e in engineers:
     row+=1
     ws.cell(row=row,column=1).value=e.name
     ws.cell(row=row, column=1).border = thin_border
 
-    ws.cell(row=row, column=2).value = e.remote_hour
+
+    ws.cell(row=row, column=2).value=e.duty_days
     ws.cell(row=row, column=2).border = thin_border
 
-    ws.cell(row=row, column=3).value = e.remote_salary
+    ws.cell(row=row, column=3).value = e.duty_salary
     ws.cell(row=row, column=3).border = thin_border
 
-    ws.cell(row=row, column=4).value=e.duty_days
+    ws.cell(row=row, column=4).value = e.out_time_hour
     ws.cell(row=row, column=4).border = thin_border
 
-    ws.cell(row=row, column=5).value = e.duty_salary
+    ws.cell(row=row, column=5).value = e.out_time_salary
     ws.cell(row=row, column=5).border = thin_border
 
-    ws.cell(row=row, column=6).value = e.out_time_hour
+    ws.cell(row=row, column=6).value = e.remote_hour
     ws.cell(row=row, column=6).border = thin_border
 
-    ws.cell(row=row, column=7).value = e.out_time_salary
+    ws.cell(row=row, column=7).value = e.remote_salary
     ws.cell(row=row, column=7).border = thin_border
 
     ws.cell(row=row, column=8).value = e.transport
@@ -451,11 +455,11 @@ for e in engineers:
     ws.cell(row=row, column=9).value = e.transport_money
     ws.cell(row=row, column=9).border = thin_border
 
-    ws.cell(row=row, column=10).value = e.fuel_litres
-    ws.cell(row=row, column=10).border = thin_border
+    #ws.cell(row=row, column=10).value = e.fuel_litres
+    #ws.cell(row=row, column=10).border = thin_border
 
-    ws.cell(row=row, column=11).value = e.fuel
-    ws.cell(row=row, column=11).border = thin_border
+    #ws.cell(row=row, column=11).value = e.fuel
+    #ws.cell(row=row, column=11).border = thin_border
 
 
 ws.cell(row=7+len(engineers),column=1).value='1C'
