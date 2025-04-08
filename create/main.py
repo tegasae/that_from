@@ -145,7 +145,18 @@ class PersonOil:
 
 def get_engineers(conn, engineers: list):
     cur = conn.cursor()
-    cur.execute(("SELECT employee_id,employee, code1s FROM employees WHERE department_id=1 and parent='Сотрудники' ORDER BY employee"))
+    #cur.execute(("SELECT employee_id,employee, code1s FROM employees WHERE department_id=1 and parent='Сотрудники' ORDER BY employee"))
+    cur.execute("select distinct e.employee_id,e.employee,e.code1s from employees e "
+                "join duty_dates dd on e.employee_id=dd.employee_id "
+                "WHERE (strftime('%Y-%m', dd.date_start)=:date or strftime('%Y-%m', dd.date_end)=:date) "
+                "and e.department_id=1 and e.parent='Сотрудники' "
+                "union "
+                "select distinct e.employee_id,e.employee,e.code1s from employees e "
+                "join performers p on e.employee_id=p.employee_id "
+                "WHERE (strftime('%Y-%m', p.date_start)=:date or strftime('%Y-%m', p.date_end)=:date) "
+                "and e.department_id=1 and e.parent='Сотрудники' "
+                "ORDER BY e.employee",
+                {'date': current_date.year_month()})
     result = cur.fetchall()
     for i in result:
         engineers.append(Engineer(id=i[0], name=i[1], code1s=i[2]))
